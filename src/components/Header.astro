@@ -1,0 +1,174 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/img/logo.png';
+import { navLinks, site } from '../data/landing';
+
+// Fuori dalla home (es. /privacy-policy/) le ancore puntano alla landing.
+const base = Astro.url.pathname === '/' ? '' : '/';
+---
+
+<header
+  id="site-header"
+  class="fixed inset-x-0 top-0 z-50 border-b"
+>
+  <div class="container-content flex h-[var(--nav-h)] items-center justify-between gap-6">
+    <!-- Logo: riporta alla landing completa, senza reload -->
+    <a
+      href={base || '#hero'}
+      data-nav-anchor
+      data-nav-home
+      class="group shrink-0"
+      aria-label={`${site.nome}, torna alla landing`}
+    >
+      <Image
+        src={logo}
+        alt={`Logo ${site.nome}`}
+        widths={[191, 382]}
+        sizes="191px"
+        class="logo-mark h-auto w-[132px] transition-opacity duration-300 group-hover:opacity-70 md:w-[191px]"
+        loading="eager"
+      />
+    </a>
+
+    <!-- Nav desktop: ogni voce apre la propria scheda -->
+    <nav class="relative hidden lg:block" aria-label="Sezioni del sito">
+      <span
+        id="nav-indicator"
+        class="pointer-events-none absolute bottom-0 left-0 h-px w-0 bg-[var(--color-brand-ink)] opacity-0"
+        aria-hidden="true"
+      ></span>
+      <ul class="flex items-center gap-7">
+        {navLinks.map((l) => (
+          <li>
+            <a
+              href={base + l.hash}
+              data-nav-anchor
+              data-nav-link={l.hash}
+              data-nav-scroll={l.hash === '#contatti' ? '' : undefined}
+              class="nav-link relative block py-2 text-[13px] font-medium tracking-[0.12em] uppercase text-[var(--color-body)] transition-colors duration-300 hover:text-[var(--color-ink)]"
+            >
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <!-- Contatto rapido: porta alla scheda Contatti, dove c'e' il form -->
+    <a
+      href={base + '#contatti'}
+      data-nav-anchor
+      data-nav-link="#contatti"
+      class="tel-card group hidden shrink-0 items-center gap-2.5 rounded-full border border-[var(--color-line)] py-2.5 pr-6 pl-2.5 lg:inline-flex"
+    >
+      <span
+        class="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-brand-ink)] text-white transition-transform duration-300 group-hover:scale-105"
+        aria-hidden="true"
+      >
+        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" />
+          <path d="m3.5 6.5 8.5 6 8.5-6" />
+        </svg>
+      </span>
+      {/* Slot stretto come le voci di navbar: una parola sola, altrimenti la
+          barra va in overflow sotto i 1200px. Per questo il valore e' corto. */}
+      <span class="mono-meta text-[var(--color-ink)] transition-colors">Contattaci</span>
+    </a>
+
+    <!-- Hamburger mobile -->
+    <button
+      id="nav-toggle"
+      type="button"
+      class="relative z-50 flex h-11 w-11 items-center justify-center lg:hidden"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      aria-label="Apri il menu di navigazione"
+    >
+      <span class="burger block h-[10px] w-6" aria-hidden="true">
+        <span class="block h-px w-full bg-[var(--color-ink)] transition-transform duration-300"></span>
+        <span class="mt-[9px] block h-px w-full bg-[var(--color-ink)] transition-transform duration-300"></span>
+      </span>
+    </button>
+  </div>
+
+  <!-- Overlay mobile: stesse ancore della nav desktop -->
+  <div
+    id="mobile-nav"
+    class="invisible fixed inset-0 top-[var(--nav-h)] z-40 bg-[var(--color-paper)] opacity-0 lg:hidden"
+  >
+    <nav class="container-content flex h-full flex-col justify-between py-10" aria-label="Menu mobile">
+      <ul class="flex flex-col gap-1">
+        {navLinks.map((l, i) => (
+          <li class="border-b border-[var(--color-line)]">
+            <a
+              href={base + l.hash}
+              data-nav-anchor
+              data-nav-link={l.hash}
+              data-nav-scroll={l.hash === '#contatti' ? '' : undefined}
+              class="nav-link flex items-baseline gap-4 py-4 font-[family-name:var(--font-display)] text-[30px] text-[var(--color-ink)]"
+            >
+              <span class="mono-meta text-[11px]">{String(i + 1).padStart(2, '0')}</span>
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div class="mono-meta flex flex-col gap-1 pt-8">
+        <a href={base || '#hero'} data-nav-anchor data-nav-home class="hover:text-[var(--color-brand-ink)]">
+          ← Torna alla landing
+        </a>
+        <a href={`mailto:${site.email}`} class="hover:text-[var(--color-brand-ink)]">{site.email}</a>
+        <a href={`tel:${site.telefonoE164}`} class="hover:text-[var(--color-brand-ink)]">{site.telefono}</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- Sipario usato nel passaggio da una scheda all'altra -->
+<div id="view-curtain" aria-hidden="true">
+  <span class="bg-[var(--color-ink)]"></span>
+  <span class="bg-[var(--color-brand-ink)]"></span>
+</div>
+
+
+<style>
+  .nav-link[aria-current='true'] {
+    color: var(--color-ink);
+  }
+
+  .tel-card {
+    transition:
+      border-color 0.35s var(--ease-reveal),
+      background-color 0.35s var(--ease-reveal);
+  }
+  .tel-card:hover {
+    border-color: var(--color-brand-ink);
+    background-color: var(--color-surface);
+  }
+  /* Nel menu mobile l'attivo si legge col colore brand */
+  #mobile-nav .nav-link[aria-current='true'] {
+    color: var(--color-brand-ink);
+  }
+
+  /* Tailwind v4 usa la proprieta' `translate`, non `transform`: qui l'apertura
+     e' gestita interamente a mano per evitare che le due si sovrappongano. */
+  #mobile-nav {
+    translate: 0 -8px;
+    transition:
+      opacity 0.3s var(--ease-reveal),
+      translate 0.3s var(--ease-reveal),
+      visibility 0.3s;
+  }
+  #mobile-nav.is-open {
+    visibility: visible;
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  #nav-toggle[aria-expanded='true'] .burger > span:first-child {
+    transform: translateY(5px) rotate(45deg);
+  }
+  #nav-toggle[aria-expanded='true'] .burger > span:last-child {
+    transform: translateY(-4px) rotate(-45deg);
+  }
+</style>

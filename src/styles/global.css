@@ -1,0 +1,519 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Design token della base.
+
+   Questi valori NON sono segnaposto: sono il sistema visivo della base
+   (palette, famiglie, breakpoint, easing) e la base e' tarata su di essi.
+   Cambiarli e' una scelta di direzione artistica da fare a parte, non parte
+   del riempimento dei contenuti.
+
+   I commenti accanto a ogni token dicono a cosa serve, cosi' chi lo cambia sa
+   che cosa tocca.
+--------------------------------------------------------------------------- */
+@theme {
+  /* Colori */
+  /* Palette Studio Tecnico Bignami (CONTENT_FILL.md, "palette proposta"):
+     blu brand #1987C6, antracite #212121, blu scuro #1E6FA8, neutri del sito.
+     Il blu brand pieno non regge il testo piccolo: 3.94:1 su bianco e 4.08:1
+     sull'antracite. Quindi:
+     - su fondo chiaro il testo blu e i bottoni usano #1E6FA8 (5.39:1 su bianco);
+     - su fondo scuro (hero, metodo, contatti, footer) si usa #2F95D3, lo stesso
+       blu appena schiarito (4.88:1 su #212121). */
+  --color-brand:      #2f95d3; /* marchio su fondo scuro e decorazioni */
+  --color-brand-soft: #7dbde6; /* variante chiara del marchio */
+  --color-brand-ink:  #1e6fa8; /* testo blu, link e bottoni su fondo chiaro */
+  --color-ink:        #212121; /* titoli e fondi scuri */
+  --color-body:       #313131; /* testo corrente */
+  --color-quote:      #212121; /* citazioni */
+  --color-paper:      #ffffff; /* fondo chiaro, navbar */
+  --color-surface:    #f4f4f4; /* fondo delle sezioni alternate */
+  --color-line:       #ebebeb; /* bordi delle card */
+  --color-line-soft:  #cccccc; /* divisori, bordo dei bottoni outline */
+  /* #747474 della mappa scurito di poco: su #F4F4F4 dava 4.25:1, ora 4.66:1 */
+  --color-muted:      #6e6e6e; /* testo secondario */
+  --color-footer:     #171717; /* fondo del footer, un passo sotto l'antracite */
+
+  /* Tipografia */
+  --font-display: "Cormorant Garamond", Georgia, serif; /* weight 500 */
+  --font-body:    "Poppins", system-ui, sans-serif;     /* weight 400 */
+  --font-quote:   "Prata", Georgia, serif;              /* weight 400 */
+  --font-eyebrow: "Mulish", system-ui, sans-serif;      /* occhielli e micro-testi */
+
+  /* Breakpoint: <=767 mobile / 768-1024 tablet / >=1025 desktop.
+     Vanno dichiarati TUTTI e in ordine crescente: ridefinendone solo alcuni,
+     Tailwind v4 emette quelli rimasti di default dopo i nostri, e un `sm:`
+     finisce per vincere su un `lg:`. */
+  --breakpoint-*: initial;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1025px;
+  --breakpoint-xl: 1280px;
+
+  /* Larghezza del contenuto */
+  --container-content: 1140px;
+
+  /* Motion: ease-out-expo, piu' secco
+     in partenza e molto morbido in chiusura. */
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  /* Apertura: quando le ante si scostano. Prima c'e' il logo che si compone;
+     l'ingresso dell'hero parte da qui invece che dal primo paint. */
+  --intro-apre: 1.95s;
+  /* Altezza navbar: usata da scroll-margin-top e dallo scroll Lenis. */
+  --nav-h: 72px;
+}
+@media (min-width: 768px) {
+  :root { --nav-h: 92px; }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: auto; /* lo smooth scroll lo gestisce Lenis */
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-body);
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-size: 17px;   /* body home */
+    line-height: 27px; /* body home (~1.6) */
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    color: var(--color-ink);
+    line-height: 1.12;
+  }
+  ::selection { background: var(--color-brand); color: #fff; }
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 3px;
+  }
+  /* Le ancore non devono finire sotto la navbar sticky (vista landing). */
+  [id] { scroll-margin-top: calc(var(--nav-h) + 8px); }
+}
+
+@layer components {
+  .container-content {
+    width: 100%;
+    max-width: var(--container-content);
+    margin-inline: auto;
+    padding-inline: 20px;
+  }
+  @media (min-width: 768px) {
+    .container-content { padding-inline: 32px; }
+  }
+
+  /* Occhiello / eyebrow - Muli 14px 600/700 uppercase, ls 1.3-2.5px, colore #5FC7DB */
+  .eyebrow {
+    font-family: var(--font-eyebrow);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 26px;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+    color: var(--color-brand-ink);
+  }
+  /* Sui fondi scuri torna il blu del marchio (4.88:1 su #212121). */
+  [data-dark] .eyebrow { color: var(--color-brand); }
+
+  /* Bottone - Poppins 12px 700 uppercase ls 2px, radius 32px, padding 24px 60px */
+  .btn {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    overflow: hidden;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 15px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-radius: 32px;
+    padding: 20px 44px;
+    transition:
+      color .45s var(--ease-reveal),
+      border-color .45s var(--ease-reveal),
+      background-color .45s var(--ease-reveal);
+  }
+  @media (min-width: 768px) {
+    .btn { padding: 24px 60px; }
+  }
+  /* Riempimento che sale dal basso all'hover */
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform .45s var(--ease-reveal);
+  }
+  .btn:hover::before { transform: scaleY(1); }
+  .btn > * { position: relative; }
+
+  .btn-primary { background: var(--color-brand-ink); color: #fff; }
+  .btn-primary::before { background: var(--color-ink); }
+  .btn-primary:hover { color: #fff; }
+
+  .btn-outline { border: 1px solid var(--color-line-soft); color: var(--color-ink); }
+  .btn-outline::before { background: var(--color-ink); }
+  .btn-outline:hover { color: #fff; border-color: var(--color-ink); }
+
+  .btn-light { border: 1px solid rgba(255, 255, 255, .35); color: #fff; }
+  .btn-light::before { background: var(--color-brand-ink); }
+  .btn-light:hover { border-color: var(--color-brand-ink); }
+
+  /* Numerazione fasi / localita' - tabular, tracking largo */
+  .mono-meta {
+    font-family: var(--font-eyebrow);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .rule { height: 1px; background: var(--color-line); }
+
+  /* Titolo hero: ogni parola in una maschera, entra dal basso */
+  .word {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    padding-bottom: 0.08em;
+  }
+  .word > span {
+    display: inline-block;
+    will-change: transform;
+  }
+
+}
+
+/* ---------------------------------------------------------------------------
+   Viste: "landing" (pagina unica che scorre) e "tab" (una scheda per volta).
+   Il passaggio fra le due lo governa src/scripts/site.ts.
+--------------------------------------------------------------------------- */
+@layer components {
+  /* Sipario della transizione fra schede */
+  #view-curtain {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    display: grid;
+  }
+  #view-curtain > span {
+    grid-area: 1 / 1;
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+
+  /* Apertura del sito: due ante che si scostano sull'hero */
+  #intro {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  #intro[hidden] { display: none; }
+  .intro-anta {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50.2%;
+    background: var(--color-ink);
+  }
+  .intro-anta[data-intro-anta='sx'] {
+    left: 0;
+    animation: sb-anta-sx 0.75s var(--ease-reveal) var(--intro-apre) forwards;
+  }
+  .intro-anta[data-intro-anta='dx'] {
+    right: 0;
+    animation: sb-anta-dx 0.75s var(--ease-reveal) var(--intro-apre) forwards;
+  }
+  .intro-riga {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    margin-left: -1px;
+    background: var(--color-brand);
+    animation: sb-intro-riga 0.4s var(--ease-reveal) calc(var(--intro-apre) + 0.05s) forwards;
+  }
+
+  /* Il logo si compone ad ante chiuse. Le tre immagini sono lo stesso PNG
+     (305x65) sovrapposto, ritagliato in colonne: segno "RB" 0-78px, barra
+     84-89px, scritta 97-305px (misurate sui pixel del file). */
+  .intro-logo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(280px, 64vw);
+    aspect-ratio: 305 / 65;
+    translate: -50% -50%;
+    /* La riga blu delle ante passa al centro: il fondo pieno la interrompe
+       attorno al logo invece di farla correre in mezzo alla scritta. */
+    background: var(--color-ink);
+    box-shadow: 0 0 0 22px var(--color-ink);
+    animation: sb-intro-logo-via 0.35s ease-in calc(var(--intro-apre) - 0.25s) forwards;
+  }
+  .intro-logo > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .intro-logo-segno {
+    clip-path: inset(0 74.4% 0 0);
+    opacity: 0;
+    scale: 0.82;
+    animation: sb-intro-segno 0.7s var(--ease-reveal) 0.15s forwards;
+  }
+  .intro-logo-barra {
+    clip-path: inset(0 70.8% 0 27.5%);
+    scale: 1 0;
+    animation: sb-intro-barra 0.45s var(--ease-reveal) 0.6s forwards;
+  }
+  .intro-logo-scritta {
+    clip-path: inset(0 100% 0 31.8%);
+    translate: -10px 0;
+    animation: sb-intro-scritta 0.75s var(--ease-reveal) 0.85s forwards;
+  }
+
+  /* Gia' vista in questa sessione, oppure reduced-motion: niente apertura. */
+  .no-intro #intro { display: none; }
+  @media (prefers-reduced-motion: reduce) {
+    #intro { display: none; }
+  }
+
+
+}
+
+@layer utilities {
+  /* ---------------------------------------------------------------------
+     Ingresso della prima schermata: CSS puro, parte al primo paint.
+     Non passa da GSAP di proposito: legare l'hero al bundle JS rimandava
+     l'LCP di ~2.6s su mobile (render delay misurato con Lighthouse).
+     --------------------------------------------------------------------- */
+  .js [data-enter] {
+    opacity: 0;
+    transform: translateY(24px);
+    animation: sb-enter 0.9s var(--ease-reveal) var(--enter-delay, 0s) forwards;
+  }
+  .js [data-enter-clip] {
+    clip-path: inset(0 0 100% 0);
+    animation: sb-enter-clip 1.2s var(--ease-reveal) var(--enter-delay, 0s) forwards;
+  }
+  .js .word > span {
+    transform: translateY(110%);
+    animation: sb-enter-word 0.9s var(--ease-reveal) var(--enter-delay, 0s) forwards;
+  }
+  /* Con l'apertura in corso l'hero aspetta le ante: stesso ritmo, spostato. */
+  .js:not(.no-intro) [data-enter],
+  .js:not(.no-intro) [data-enter-clip],
+  .js:not(.no-intro) .word > span {
+    animation-delay: calc(var(--enter-delay, 0s) + var(--intro-apre));
+  }
+
+  /* ---------------------------------------------------------------------
+     Reveal on-scroll, in CSS.
+     La visibilita' del contenuto NON dipende piu' da GSAP: prima bastava che
+     ScrollTrigger non scattasse (cambio vista, refresh, tab in background)
+     per lasciare intere sezioni a opacity 0, cioe' una pagina di blocchi
+     bianchi. Ora hanno solo bisogno della classe .is-in, che mette un
+     IntersectionObserver; se il JS non gira affatto manca la classe .js e il
+     contenuto e' visibile comunque.
+     --------------------------------------------------------------------- */
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity 0.9s var(--ease-reveal) var(--reveal-delay, 0s),
+      transform 0.9s var(--ease-reveal) var(--reveal-delay, 0s);
+  }
+  .js [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+  }
+  .js [data-reveal-clip] {
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path 1.2s var(--ease-reveal) var(--reveal-delay, 0s);
+  }
+  .js [data-reveal-clip].is-in {
+    clip-path: inset(0 0 0% 0);
+  }
+
+  /* Banda scorrevole delle specializzazioni */
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: sb-marquee 38s linear infinite;
+  }
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   Due stati della navbar.
+   Sopra l'hero (vista landing, pagina in cima) e' trasparente, cosi' la foto
+   occupa davvero tutta la prima schermata; il velo scuro dell'hero tiene il
+   testo bianco sopra la soglia AA. Appena si scorre, o in vista scheda,
+   torna la barra bianca piena.
+   Queste regole stanno qui e non nel componente: lo scoping di Astro non
+   le farebbe agganciare al logo (reso da <Image>) ne' vincere sulle utility.
+   --------------------------------------------------------------------- */
+#site-header {
+  background-color: var(--color-paper);
+  border-color: var(--color-line);
+  transition:
+    background-color 0.4s var(--ease-reveal),
+    border-color 0.4s var(--ease-reveal);
+}
+
+body[data-view='landing']:not([data-scrolled]):not([data-menu-open]) #site-header {
+  background-color: transparent;
+  border-color: transparent;
+}
+body[data-view='landing']:not([data-scrolled]):not([data-menu-open]) #site-header .logo-mark {
+  filter: brightness(0) invert(1);
+}
+body[data-view='landing']:not([data-scrolled]):not([data-menu-open]) #site-header .nav-link,
+body[data-view='landing']:not([data-scrolled]):not([data-menu-open]) #site-header .tel-card .mono-meta {
+  color: rgba(255, 255, 255, 0.88);
+}
+body[data-view='landing']:not([data-scrolled]):not([data-menu-open]) #site-header .nav-link:hover,
+body[data-view='landing']:not([data-scrolled]):not([data-menu-open]) #site-header .nav-link[aria-current='true'] {
+  color: #fff;
+}
+body[data-view='landing']:not([data-scrolled]):not([data-menu-open]) #site-header .tel-card {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+body[data-view='landing']:not([data-scrolled]):not([data-menu-open]) #site-header .tel-card:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+body[data-view='landing']:not([data-scrolled]):not([data-menu-open]) #site-header .burger > span {
+  background-color: #fff;
+}
+
+
+/* ---------------------------------------------------------------------------
+   Quali sezioni sono a video, per vista.
+   Queste regole stanno FUORI da @layer di proposito: le utility di Tailwind
+   (l'hero ha `flex`) vivono in @layer utilities e vincerebbero su un
+   display:none scritto in @layer components.
+--------------------------------------------------------------------------- */
+/* In modalita' scheda resta a video solo la sezione attiva. */
+body[data-view='tab'] [data-section]:not(.is-active),
+body[data-view='tab'] [data-landing-only] {
+  display: none;
+}
+
+/* La landing e' un indice: di ogni sezione mostra l'anteprima e tiene da parte
+   il contenuto pieno, che si apre dalla navbar. */
+body[data-view='landing'] [data-tab-only] {
+  display: none;
+}
+body[data-view='tab'] [data-section].is-active {
+  min-height: calc(100svh - var(--nav-h));
+  padding-top: calc(var(--nav-h) + 40px);
+}
+@media (min-width: 768px) {
+  body[data-view='tab'] [data-section].is-active {
+    padding-top: calc(var(--nav-h) + 64px);
+  }
+}
+
+
+
+/* ---------------------------------------------------------------------------
+   Binario orizzontale (come il sito di riferimento): la sezione si blocca e il
+   binario scorre di lato. Lo usano il Metodo nella sua scheda e i Progetti
+   nella landing. Sotto i 1025px e con reduced-motion torna una pila verticale:
+   stesso contenuto, si scorre normalmente.
+   La larghezza dei pannelli la decide chi lo usa, con --binario-pannello.
+--------------------------------------------------------------------------- */
+[data-binario] {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+@media (min-width: 1025px) {
+  [data-binario] {
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--binario-gap, 40px);
+    width: max-content;
+    /* `container-content` lo terrebbe a 1140px: qui deve poter eccedere la
+       finestra, altrimenti non c'e' niente da far scorrere. */
+    max-width: none;
+    margin-inline: 0;
+    padding-inline-start: max(32px, calc((100vw - var(--container-content)) / 2));
+    padding-inline-end: 8vw;
+    will-change: transform;
+  }
+  [data-binario] > li {
+    width: var(--binario-pannello, 62vw);
+    max-width: 860px;
+  }
+  [data-binario-pin] {
+    overflow: hidden;
+    /* Alto quanto la finestra sotto la navbar, col binario centrato: cosi' non
+       resta spazio vuoto ne' sopra ne' sotto mentre la sezione e' bloccata. */
+    min-height: calc(100svh - var(--nav-h));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+[data-binario-avanzamento] {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--color-brand-ink);
+}
+
+@keyframes sb-anta-sx    { to { transform: translateX(-100%); } }
+@keyframes sb-anta-dx    { to { transform: translateX(100%); } }
+@keyframes sb-intro-riga { to { transform: scaleY(0); } }
+@keyframes sb-intro-segno   { to { opacity: 1; scale: 1; } }
+@keyframes sb-intro-barra   { to { scale: 1 1; } }
+@keyframes sb-intro-scritta { to { clip-path: inset(0 0 0 31.8%); translate: 0 0; } }
+@keyframes sb-intro-logo-via { to { opacity: 0; translate: -50% calc(-50% - 10px); } }
+
+@keyframes sb-enter      { to { opacity: 1; transform: none; } }
+@keyframes sb-enter-clip { to { clip-path: inset(0 0 0% 0); } }
+@keyframes sb-enter-word { to { transform: none; } }
+
+@keyframes sb-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal], .js [data-enter] { opacity: 1 !important; transform: none !important; }
+  .js [data-reveal-clip], .js [data-enter-clip] { clip-path: none !important; }
+  .js [data-reveal], .js [data-reveal-clip] { transition: none !important; }
+  .js .word > span { transform: none !important; }
+  .js [data-enter], .js [data-enter-clip], .js .word > span { animation: none !important; }
+  #intro { display: none !important; }
+  .marquee-track { animation: none !important; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+}

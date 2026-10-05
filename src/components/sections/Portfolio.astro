@@ -1,0 +1,208 @@
+---
+import { Image } from 'astro:assets';
+import { progetti } from '../../data/landing';
+import { progettiTutti, categorie } from '../../data/progetti';
+
+const files = import.meta.glob<{ default: ImageMetadata }>('../../assets/img/progetto-*.jpg', {
+  eager: true,
+});
+const img = (name: string) => files[`../../assets/img/${name}`].default;
+
+const tutte = import.meta.glob<{ default: ImageMetadata }>('../../assets/img/progetti/*.jpg', {
+  eager: true,
+});
+const cover = (name: string) => tutte[`../../assets/img/progetti/${name}`].default;
+
+// Nella landing bastano quattro progetti a illustrare: la vetrina intera e'
+// nella scheda.
+const anteprima = progetti.slice(0, 4);
+---
+
+<section id="portfolio" data-section class="py-16 md:py-20">
+  <div class="container-content">
+    <header class="flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p class="eyebrow" data-reveal>Servizi</p>
+        <h2 class="mt-4 text-[clamp(30px,4.2vw,56px)]" data-reveal data-reveal-delay="0.08">
+          I nostri Servizi edilizi
+        </h2>
+      </div>
+      <a
+        href="#contatti"
+        data-nav-anchor
+        data-nav-link="#contatti"
+        data-tab-only
+        class="mono-meta pb-2 transition-colors hover:text-[var(--color-brand-ink)]"
+        data-reveal
+      >
+        Richiedi preventivo →
+      </a>
+    </header>
+
+    {/*
+      Anteprima: quattro progetti che attraversano lo schermo in orizzontale
+      mentre la pagina resta bloccata. La vetrina completa, con tutti e sei,
+      resta nella scheda.
+    */}
+    <div data-landing-only class="mt-10">
+      <div data-binario-scena>
+        <div data-binario-pin>
+          <ul data-binario style="--binario-pannello:38vw; --binario-gap:32px">
+            {
+              anteprima.map((x) => (
+                <li>
+                  <a href={x.href} data-nav-anchor data-nav-link={x.href} class="group block">
+                    <span class="block overflow-hidden">
+                      <Image
+                        src={img(x.img)}
+                        alt={x.alt}
+                        widths={[420, 700, 1000]}
+                        sizes="(min-width: 1025px) 38vw, 92vw"
+                        class="h-[260px] w-full object-cover transition-transform duration-700 ease-[var(--ease-reveal)] group-hover:scale-[1.03] lg:h-[440px]"
+                        loading="lazy"
+                      />
+                    </span>
+                    <span class="mono-meta mt-4 flex flex-wrap items-center gap-x-3 gap-y-1">
+                      <span class="text-[var(--color-brand-ink)]">{x.categoria}</span>
+                      <span aria-hidden="true">/</span>
+                      <span>{x.localita}</span>
+                    </span>
+                    <span class="mt-2 block font-[family-name:var(--font-display)] text-[clamp(22px,2.2vw,28px)] leading-tight text-[var(--color-ink)]">
+                      {x.titolo}
+                    </span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+
+          <div class="container-content mt-8 hidden lg:block">
+            <div class="h-px w-full bg-[var(--color-line)]">
+              <span data-binario-avanzamento aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container-content mt-10">
+        <a
+          href="#portfolio"
+          data-nav-anchor
+          data-nav-link="#portfolio"
+          class="btn btn-outline"
+          data-reveal
+        >
+          Scopri tutti i nostri servizi
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  {/*
+    Scheda: tutti i progetti del portfolio, con il filtro in testa.
+    Le categorie sono le quattro della tassonomia (vedi progetti.ts).
+  */}
+  <div data-tab-only class="container-content mt-8">
+    <div
+      class="flex flex-wrap items-center gap-2 border-b border-[var(--color-line)] pb-6"
+      role="group"
+      aria-label="Filtra i servizi per categoria"
+    >
+      <button type="button" class="filtro is-current" data-filtro="" aria-pressed="true">
+        Tutti <span class="filtro-n">{progettiTutti.length}</span>
+      </button>
+      {
+        categorie.map((c) => (
+          <button type="button" class="filtro" data-filtro={c} aria-pressed="false">
+            {c}
+            <span class="filtro-n">
+              {progettiTutti.filter((x) => x.categorie.includes(c)).length}
+            </span>
+          </button>
+        ))
+      }
+    </div>
+
+    <p class="mono-meta mt-5" data-conteggio aria-live="polite">{progettiTutti.length} servizi</p>
+
+    <ul class="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3" data-griglia>
+      {
+        progettiTutti.map((x, i) => (
+          <li
+            data-categorie={x.categorie.join('|')}
+            data-reveal
+            data-reveal-delay={((i % 3) * 0.05).toFixed(2)}
+          >
+            <a href={x.href} data-nav-anchor data-nav-link={x.href} class="group block">
+              <span class="relative block overflow-hidden">
+                <Image
+                  src={cover(x.img)}
+                  alt={x.alt}
+                  widths={[380, 620, 900]}
+                  sizes="(min-width: 1025px) 340px, (min-width: 640px) 46vw, 92vw"
+                  class="h-[260px] w-full object-cover transition-transform duration-700 ease-[var(--ease-reveal)] group-hover:scale-[1.03]"
+                  loading="lazy"
+                />
+                <span class="absolute inset-0 flex items-center justify-center bg-[var(--color-ink)]/70 opacity-0 transition-opacity duration-500 group-hover:opacity-100 group-focus-visible:opacity-100">
+                  <span class="btn btn-light !px-8 !py-4">Richiedi preventivo</span>
+                </span>
+              </span>
+
+              <span class="mono-meta mt-4 flex flex-wrap items-center gap-x-3 gap-y-1">
+                <span class="text-[var(--color-brand-ink)]">{x.categorie[0]}</span>
+                <span aria-hidden="true">/</span>
+                <span>{x.localita}</span>
+              </span>
+              <span class="mt-2 block font-[family-name:var(--font-display)] text-[22px] leading-tight text-[var(--color-ink)]">
+                {x.titolo}
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-12 flex justify-center">
+      <a href="#contatti" data-nav-anchor data-nav-link="#contatti" class="btn btn-outline">Richiedi preventivo</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .filtro {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border: 1px solid var(--color-line);
+    border-radius: 32px;
+    font-family: var(--font-eyebrow);
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-body);
+    cursor: pointer;
+    transition:
+      background-color 0.35s var(--ease-reveal),
+      border-color 0.35s var(--ease-reveal),
+      color 0.35s var(--ease-reveal);
+  }
+  .filtro:hover {
+    border-color: var(--color-brand-ink);
+    color: var(--color-brand-ink);
+  }
+  .filtro.is-current {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: #fff;
+  }
+  .filtro-n {
+    font-variant-numeric: tabular-nums;
+    opacity: 0.55;
+  }
+  [data-griglia] > li[hidden] {
+    display: none;
+  }
+</style>

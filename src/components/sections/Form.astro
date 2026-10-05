@@ -1,0 +1,114 @@
+---
+
+/**
+ * Form contatti — Studio Tecnico Bignami (telefono obbligatorio, come sul sito attuale).
+ *
+ * I campi (nome*, email*, telefono*, messaggio*, consenso privacy*) sono la
+ * struttura: aggiungerne o toglierne cambia la griglia a due colonne.
+ *
+ * [[DA COMPILARE: endpoint del form]] — destinatario: l'email dello studio
+ * (site.email in landing.ts). Il form OGGI NON SPEDISCE NULLA ed e'
+ * voluto: la base non deve mandare messaggi da nessuna parte. La destinazione
+ * si collega in src/scripts/site.ts, sezione 11, dove c'e' il punto esatto e le
+ * strade possibili (Formspree, Basin, una Astro Action con adapter).
+ */
+const campi = [
+  { id: 'nome', label: 'Nome e cognome', tipo: 'text' as const, obbligatorio: true, autocomplete: 'name' },
+  { id: 'email', label: 'Email', tipo: 'email' as const, obbligatorio: true, autocomplete: 'email' },
+  { id: 'telefono', label: 'Telefono', tipo: 'tel' as const, obbligatorio: true, autocomplete: 'tel' },
+];
+---
+
+<form class="flex flex-col gap-6" data-form-contatti novalidate>
+  <div class="grid gap-6 sm:grid-cols-2">
+    {
+      campi.map((c) => (
+        <p class:list={['flex flex-col gap-2', c.id === 'nome' && 'sm:col-span-2']}>
+          <label class="mono-meta text-white/60" for={c.id}>
+            {c.label}
+            {c.obbligatorio && <span aria-hidden="true"> *</span>}
+          </label>
+          <input
+            id={c.id}
+            name={c.id}
+            type={c.tipo}
+            required={c.obbligatorio}
+            autocomplete={c.autocomplete}
+            class="campo"
+          />
+        </p>
+      ))
+    }
+  </div>
+
+  <p class="flex flex-col gap-2">
+    <label class="mono-meta text-white/60" for="messaggio">
+      Il tuo messaggio <span aria-hidden="true">*</span>
+    </label>
+    <textarea id="messaggio" name="messaggio" rows="5" required class="campo resize-y"></textarea>
+  </p>
+
+  {/* Trappola per i bot: se compilato, l'invio non parte. */}
+  <p class="sr-only" aria-hidden="true">
+    <label for="azienda">Non compilare questo campo</label>
+    <input id="azienda" name="azienda" type="text" tabindex="-1" autocomplete="off" />
+  </p>
+
+  <p class="flex items-start gap-3">
+    <input id="privacy" name="privacy" type="checkbox" required class="mt-1.5 h-4 w-4 shrink-0" />
+    <label for="privacy" class="text-[14px] leading-6 text-white/75">
+      Ho letto e accetto le condizioni della
+      <a
+        href="/privacy-policy/"
+        class="underline underline-offset-4 transition-colors hover:text-[var(--color-brand)]"
+      >
+        Privacy Policy
+      </a>
+      <span aria-hidden="true"> *</span>
+    </label>
+  </p>
+
+  <div class="flex flex-wrap items-center gap-5">
+    <button type="submit" class="btn btn-primary"><span>Invia</span></button>
+    <p class="mono-meta text-white/50" data-form-esito role="status"></p>
+  </div>
+</form>
+
+<style>
+  .campo {
+    width: 100%;
+    padding: 13px 15px;
+    background: rgb(255 255 255 / 0.05);
+    border: 1px solid rgb(255 255 255 / 0.2);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 16px;
+    transition:
+      border-color 0.35s var(--ease-reveal),
+      background-color 0.35s var(--ease-reveal);
+  }
+  .campo:hover {
+    border-color: rgb(255 255 255 / 0.35);
+  }
+  .campo:focus {
+    outline: none;
+    border-color: var(--color-brand);
+    background: rgb(255 255 255 / 0.08);
+  }
+  /* Lo stato di errore non e' solo colore: c'e' anche il messaggio sotto. */
+  .campo[aria-invalid='true'] {
+    border-color: #e8817e;
+  }
+  .campo-errore {
+    margin-top: 6px;
+    font-family: var(--font-eyebrow);
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    color: #e8817e;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .campo {
+      transition: none;
+    }
+  }
+</style>

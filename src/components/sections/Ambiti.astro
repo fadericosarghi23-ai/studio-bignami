@@ -1,0 +1,121 @@
+---
+import { Image } from 'astro:assets';
+import { ambiti } from '../../data/landing';
+
+const files = import.meta.glob<{ default: ImageMetadata }>('../../assets/img/ambito-*.jpg', {
+  eager: true,
+});
+const img = (name: string) => files[`../../assets/img/${name}`].default;
+---
+
+<section id="ambiti" data-section class="bg-[var(--color-surface)] py-16 md:py-20">
+  <div class="container-content">
+    <header class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <h2 class="text-[clamp(30px,4.2vw,56px)]" data-reveal>I Nostri Servizi</h2>
+      <p class="max-w-[38ch] md:text-right" data-reveal data-reveal-delay="0.08">
+        A Milano, San Giuliano Milanese e in Lombardia.
+      </p>
+    </header>
+
+    {/* Anteprima: quattro card con la foto dell'ambito */}
+    <ul data-landing-only class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        ambiti.map((x, i) => (
+          <li data-reveal data-reveal-delay={(i * 0.08).toFixed(2)}>
+            <a href={x.href} data-nav-anchor data-nav-link={x.href} class="ambito-card group block bg-[var(--color-paper)]">
+              <span class="block overflow-hidden">
+                <Image
+                  src={img(x.img)}
+                  alt={x.alt}
+                  widths={[320, 520, 760]}
+                  sizes="(min-width: 1025px) 262px, (min-width: 640px) 48vw, 92vw"
+                  class="h-[200px] w-full object-cover transition-transform duration-700 ease-[var(--ease-reveal)] group-hover:scale-[1.04]"
+                  loading="lazy"
+                />
+              </span>
+              <span class="block border border-t-0 border-[var(--color-line)] px-5 py-4">
+                <span class="block font-[family-name:var(--font-display)] text-[22px] leading-tight text-[var(--color-ink)]">
+                  {x.titolo}
+                </span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <a
+      href="#ambiti"
+      data-nav-anchor
+      data-nav-link="#ambiti"
+      data-landing-only
+      class="btn btn-outline mt-9"
+      data-reveal
+    >
+      Scopri gli ambiti
+    </a>
+
+  </div>
+
+  {/* Scheda: i quattro ambiti attraversano lo schermo in orizzontale */}
+  <div data-tab-only class="mt-10">
+    <div data-binario-scena>
+      <div data-binario-pin>
+        <ul data-binario style="--binario-pannello:40vw; --binario-gap:32px">
+          {
+            ambiti.map((x) => (
+              <li>
+                <a href={x.href} data-nav-anchor data-nav-link={x.href} class="group flex h-full flex-col bg-[var(--color-paper)]">
+                  <span class="block overflow-hidden">
+                    <Image
+                      src={img(x.img)}
+                      alt={x.alt}
+                      widths={[420, 700, 1040]}
+                      sizes="(min-width: 1025px) 40vw, 92vw"
+                      class="h-[300px] w-full object-cover grayscale-[10%] transition-[transform,filter] duration-700 ease-[var(--ease-reveal)] group-hover:scale-[1.04] group-hover:grayscale-0 lg:h-[420px]"
+                      loading="lazy"
+                    />
+                  </span>
+                  <span class="flex grow flex-col border border-t-0 border-[var(--color-line)] p-7">
+                    <span class="block font-[family-name:var(--font-display)] text-[clamp(24px,2.4vw,32px)] text-[var(--color-ink)]">
+                      {x.titolo}
+                    </span>
+                    <span class="mt-3 block max-w-[40ch] text-[15px] leading-6">{x.testo}</span>
+                    <span class="mono-meta mt-auto inline-block pt-6 transition-colors group-hover:text-[var(--color-brand-ink)]">
+                      Scopri di più →
+                    </span>
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="container-content mt-8 hidden lg:block">
+          <div class="h-px w-full bg-[var(--color-line)]">
+            <span data-binario-avanzamento aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ambito-card {
+    transition:
+      transform 0.45s var(--ease-reveal),
+      box-shadow 0.45s var(--ease-reveal);
+  }
+  .ambito-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 40px -28px rgb(40 41 51 / 0.5);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ambito-card,
+    .ambito-card:hover {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>

@@ -1,0 +1,85 @@
+---
+import { site } from '../../data/landing';
+
+// L'embed interroga Google con l'indirizzo dello studio: nessuna coordinata
+// scritta a mano. Se un giorno serve il pin al metro, si passa a lat/lng.
+const q = encodeURIComponent(site.indirizzo);
+const embed = `https://www.google.com/maps?q=${q}&hl=it&z=16&output=embed`;
+const apri = `https://www.google.com/maps/search/?api=1&query=${q}`;
+---
+
+<div>
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <p class="mono-meta text-[var(--color-brand)]">Dove siamo</p>
+      <p class="mt-2 font-[family-name:var(--font-display)] text-[clamp(20px,2.4vw,28px)] text-white">
+        {site.indirizzo}
+      </p>
+    </div>
+    <a
+      href={apri}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="mono-meta shrink-0 text-white/70 underline underline-offset-4 transition-colors hover:text-[var(--color-brand)]"
+    >
+      Apri in Google Maps →
+    </a>
+  </div>
+
+  {/*
+    Mappa vera di Google. Il colore lo da' un filtro CSS sull'iframe, che porta
+    la mappa chiara di serie sui neutri freddi della palette e lascia l'acqua
+    sull'azzurro del marchio. NOTA: e' la sola strada senza chiave API, ma
+    altera i pixel resi da Google. Il modo pulito e' una mappa stilizzata via
+    Maps JavaScript API con una API key: appena c'e', si sostituisce qui.
+  */}
+  <div class="mappa-cornice relative mt-6 overflow-hidden border border-white/12">
+    <iframe
+      src={embed}
+      title={`Mappa della sede dello studio, ${site.indirizzo}`}
+      class="mappa-frame block h-[320px] w-full border-0 md:h-[420px]"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      allowfullscreen></iframe>
+
+    {/* Vignettatura nei colori della palette, sopra la mappa ma non cliccabile */}
+    <div
+      class="pointer-events-none absolute inset-0 shadow-[inset_0_0_120px_40px_var(--color-ink)]"
+      aria-hidden="true"
+    >
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Da mappa chiara a mappa scura nei toni del sito: l'inversione scurisce il
+     fondo, la rotazione di tinta rimette l'acqua sull'azzurro invece che
+     sull'arancio, saturazione e contrasto la calmano. */
+  .mappa-frame {
+    filter: invert(92%) hue-rotate(185deg) saturate(0.7) brightness(0.92) contrast(1.05);
+  }
+
+  /* Al passaggio del mouse torna leggibile come una mappa normale: serve per
+     usarla davvero, non solo per guardarla. */
+  .mappa-cornice:hover .mappa-frame,
+  .mappa-cornice:focus-within .mappa-frame {
+    filter: none;
+  }
+  .mappa-cornice:hover > [aria-hidden],
+  .mappa-cornice:focus-within > [aria-hidden] {
+    opacity: 0;
+  }
+  .mappa-frame,
+  .mappa-cornice > [aria-hidden] {
+    transition:
+      filter 0.5s var(--ease-reveal),
+      opacity 0.5s var(--ease-reveal);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mappa-frame,
+    .mappa-cornice > [aria-hidden] {
+      transition: none;
+    }
+  }
+</style>

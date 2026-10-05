@@ -1,0 +1,25 @@
+# Canonical su un solo host e una sola convenzione di slash (sempre con slash
+# finale, come astro.config.mjs -> trailingSlash: 'always').
+[build]
+  # Il check dei link fa fallire il deploy se compare un href vuoto, un
+  # placeholder o un link interno rotto.
+  command = "npm run build && npm run check:links"
+  publish = "dist"
+
+[build.environment]
+  # Astro 7 richiede Node >= 22.12 (vedi engines in package.json): con la 20
+  # il build fallisce in partenza.
+  NODE_VERSION = "22"
+
+# Un solo host: apex -> www, cosi' il canonical non ha doppioni.
+# Redirect apex -> www (host gia' in uso dal cliente)
+[[redirects]]
+  from = "https://studiobignami.net/*"
+  to = "https://www.studiobignami.net/:splat"
+  status = 301
+  force = true
+
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

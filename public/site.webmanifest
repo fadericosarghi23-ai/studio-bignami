@@ -1,0 +1,21 @@
+{
+  "name": "Studio Tecnico Bignami",
+  "short_name": "Bignami",
+  "description": "Studio di geometra a San Giuliano Milanese: pratiche edilizie, catastali e certificazione energetica.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1987c6",
+  "icons": [
+    {
+      "src": "/icon-192.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/favicon-270.jpg",
+      "sizes": "270x270",
+      "type": "image/jpeg"
+    }
+  ]
+}

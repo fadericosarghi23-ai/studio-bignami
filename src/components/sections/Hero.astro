@@ -1,0 +1,235 @@
+---
+import { getImage } from 'astro:assets';
+import { hero, progetti } from '../../data/landing';
+
+// Il carosello fa il giro dei sei progetti in vetrina: le stesse foto delle
+// card del portfolio, cosi' l'hero racconta davvero il lavoro dello studio.
+const files = import.meta.glob<{ default: ImageMetadata }>('../../assets/img/progetto-*.jpg', {
+  eager: true,
+});
+const sorgente = (name: string) => files[`../../assets/img/${name}`].default;
+
+const LARGHEZZE = [768, 1280, 1800, 2500];
+
+/**
+ * Le rendition si preparano qui invece di usare <Picture>: al carosello serve
+ * poter rimandare il caricamento di tutto cio' che non e' la prima foto, e per
+ * farlo i srcset delle altre slide partono in data-srcset (vedi site.ts).
+ */
+const slide = await Promise.all(
+  progetti.map(async (p) => {
+    const src = sorgente(p.img);
+    const larghezze = LARGHEZZE.filter((w) => w <= src.width);
+    if (!larghezze.length) larghezze.push(src.width);
+
+    const set = async (format: 'avif' | 'webp') =>
+      (
+        await Promise.all(
+          larghezze.map(
+            async (w) => `${(await getImage({ src, width: w, format, quality: 82 })).src} ${w}w`
+          )
+        )
+      ).join(', ');
+
+    return {
+      ...p,
+      avif: await set('avif'),
+      webp: await set('webp'),
+      fallback: (await getImage({ src, width: larghezze.at(-1)!, format: 'webp', quality: 82 })).src,
+      larghezza: src.width,
+      altezza: src.height,
+    };
+  })
+);
+
+// Il titolo entra parola per parola: ogni parola vive dentro la sua maschera.
+const parole = hero.h1.split(' ');
+
+/**
+ * L'ingresso dell'hero e' animato in CSS (data-enter): parte al primo paint,
+ * senza aspettare il bundle JS. Legarlo a GSAP rimandava l'LCP di ~2.6s.
+ */
+const ritardo = (s: number) => `--enter-delay:${s}s`;
+---
+
+<section
+  id="hero"
+  data-landing-only
+  data-dark
+  class="relative flex min-h-[100svh] items-end overflow-hidden"
+>
+  <div id="hero-carosello" class="absolute inset-0">
+    {
+      slide.map((s, i) => (
+        <div class:list={['hero-slide absolute inset-0', i === 0 && 'is-current']} data-slide>
+          <picture>
+            <source
+              type="image/avif"
+              srcset={i === 0 ? s.avif : undefined}
+              data-srcset={i === 0 ? undefined : s.avif}
+              sizes="100vw"
+            />
+            <source
+              type="image/webp"
+              srcset={i === 0 ? s.webp : undefined}
+              data-srcset={i === 0 ? undefined : s.webp}
+              sizes="100vw"
+            />
+            <img
+              src={i === 0 ? s.fallback : undefined}
+              data-src={i === 0 ? undefined : s.fallback}
+              width={s.larghezza}
+              height={s.altezza}
+              alt={s.alt}
+              class="h-full w-full object-cover"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : 'low'}
+            />
+          </picture>
+        </div>
+      ))
+    }
+  </div>
+
+  {/* Velo alto: tiene leggibile la navbar trasparente sopra la foto */}
+  <div
+    class="absolute inset-x-0 top-0 h-[240px] bg-gradient-to-b from-[var(--color-ink)]/80 to-transparent"
+    aria-hidden="true"
+  >
+  </div>
+  {/* Velo basso + velo da sinistra: insieme portano il testo bianco sopra la
+      soglia AA su qualunque foto, lasciando pulita la parte destra dello scatto */}
+  <div
+    class="absolute inset-x-0 bottom-0 h-[72%] bg-gradient-to-t from-[var(--color-ink)]/92 via-[var(--color-ink)]/60 to-transparent"
+    aria-hidden="true"
+  >
+  </div>
+  <div
+    class="absolute inset-y-0 left-0 w-full bg-gradient-to-r from-[var(--color-ink)]/70 via-[var(--color-ink)]/25 to-transparent md:w-[68%]"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="container-content relative pt-32 pb-14 md:pb-16">
+    {/* Sulla foto l'occhiello va in bianco: in teal non raggiungerebbe AA con
+        nessun velo ragionevole. */}
+    <p class="eyebrow text-white" data-enter style={ritardo(0)}>{hero.eyebrow}</p>
+
+    <h1 class="mt-4 max-w-[19ch] text-[clamp(34px,5vw,74px)] leading-[1.08] text-white">
+      {parole.map((p, i) => (
+        <span class="word mr-[0.25em]">
+          <span style={ritardo(0.04 + i * 0.03)}>{p}</span>
+        </span>
+      ))}
+    </h1>
+
+    <div class="mt-8 flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+      <p class="max-w-[46ch] text-[17px] text-white/85" data-enter style={ritardo(0.12)}>
+        {hero.kicker}
+      </p>
+      <a
+        href="#portfolio"
+        data-nav-anchor
+        class="btn btn-primary self-start md:self-auto"
+        data-enter
+        style={ritardo(0.18)}
+      >
+        <span>{hero.ctaLabel}</span>
+      </a>
+    </div>
+
+    {/* Quale progetto si sta guardando, piu' i comandi per sceglierlo */}
+    <div
+      class="mt-10 flex flex-col gap-4 border-t border-white/20 pt-5 md:flex-row md:items-center md:justify-between"
+      data-enter
+      style={ritardo(0.24)}
+    >
+      <p class="relative h-[46px] grow" aria-live="polite">
+        {slide.map((s, i) => (
+          <span
+            class:list={[
+              'hero-didascalia absolute inset-0 flex flex-col justify-center',
+              i === 0 && 'is-current',
+            ]}
+            data-slide-nome
+          >
+            <span class="font-[family-name:var(--font-display)] text-[19px] leading-tight text-white">
+              {s.titolo}
+            </span>
+            <span class="mono-meta text-white/65">
+              {s.categoria} / {s.localita}
+            </span>
+          </span>
+        ))}
+      </p>
+
+      <div class="flex shrink-0 gap-2.5" role="group" aria-label="Scegli il servizio da vedere">
+        {slide.map((s, i) => (
+          <button
+            type="button"
+            class:list={['hero-punto', i === 0 && 'is-current']}
+            data-slide-punto
+            aria-current={i === 0 ? 'true' : 'false'}
+            aria-label={`Mostra ${s.titolo}`}
+          />
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Le slide si incrociano in dissolvenza; la prima e' gia' a video, quindi
+     non c'e' nulla da aspettare per il primo paint. */
+  .hero-slide {
+    opacity: 0;
+    transition: opacity 1.2s var(--ease-reveal);
+  }
+  .hero-slide.is-current {
+    opacity: 1;
+  }
+  /* Avvicinamento lentissimo sulla foto attiva: da' vita senza distrarre. */
+  .hero-slide.is-current img {
+    animation: sb-hero-zoom 9s linear forwards;
+  }
+  @keyframes sb-hero-zoom {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.05);
+    }
+  }
+
+  .hero-didascalia {
+    opacity: 0;
+    transition: opacity 0.6s var(--ease-reveal);
+  }
+  .hero-didascalia.is-current {
+    opacity: 1;
+  }
+
+  .hero-punto {
+    width: 30px;
+    height: 3px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.35);
+    transition: background-color 0.4s var(--ease-reveal);
+  }
+  .hero-punto:hover {
+    background: rgba(255, 255, 255, 0.7);
+  }
+  .hero-punto.is-current {
+    background: var(--color-brand);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-slide,
+    .hero-didascalia {
+      transition: none;
+    }
+    .hero-slide.is-current img {
+      animation: none;
+    }
+  }
+</style>

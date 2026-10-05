@@ -1,0 +1,84 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/img/logo.png';
+import { site, footerMenu, legale } from '../data/landing';
+
+// Fuori dalla home le voci del menu (ancore della landing) puntano a /#...
+const base = Astro.url.pathname === '/' ? '' : '/';
+
+// Anno dinamico: mai un anno scritto a mano nel footer.
+const anno = new Date().getFullYear();
+
+// Profili social: si mostrano solo quelli compilati (il cliente oggi non ne ha).
+const social = [
+  { nome: 'Instagram', href: site.social.instagram },
+  { nome: 'Facebook', href: site.social.facebook },
+].filter((s) => s.href);
+
+// Un dato legale ancora da compilare non va a video: resta solo in landing.ts.
+const compilato = (v: string) => Boolean(v) && !v.startsWith('[[');
+---
+
+<footer class="bg-[var(--color-footer)] text-white/70">
+  <div class="container-content grid gap-12 py-16 md:grid-cols-2 md:py-20 lg:grid-cols-[1.4fr_1fr_1fr]">
+    <div class="max-w-md">
+      <Image
+        src={logo}
+        alt={`Logo ${site.nome}`}
+        widths={[191, 382]}
+        sizes="191px"
+        class="h-auto w-[170px] brightness-0 invert"
+        loading="lazy"
+      />
+      <p class="mt-6 text-[15px] leading-7">
+        Affidabilità, Competenza e Passione per la tua tranquillità. Contattaci oggi per un servizio professionale e personalizzato.
+      </p>
+    </div>
+
+    <nav aria-label="Menu del sito">
+      <h2 class="eyebrow mb-5 text-white/60">Naviga</h2>
+      <ul class="flex flex-col gap-2.5 text-[15px]">
+        {footerMenu.map((item) => (
+          <li>
+            <a href={base + item.href} data-nav-anchor data-nav-link={base ? undefined : item.href} class="transition-colors hover:text-[var(--color-brand)]">{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div>
+      <h2 class="eyebrow mb-5 text-white/60">Contatti</h2>
+      <address class="flex flex-col gap-2.5 text-[15px] not-italic">
+        <span>{site.indirizzo}</span>
+        <a href={`tel:${site.telefonoE164}`} class="transition-colors hover:text-[var(--color-brand)]">
+          {site.telefono}
+        </a>
+        <a href={`mailto:${site.email}`} class="transition-colors hover:text-[var(--color-brand)]">
+          {site.email}
+        </a>
+      </address>
+
+      {social.length > 0 && (
+        <>
+          <h2 class="eyebrow mt-8 mb-4 text-white/60">Seguici</h2>
+          <ul class="flex gap-5 text-[15px]">
+            {social.map((s) => (
+              <li>
+                <a href={s.href} rel="noopener noreferrer" target="_blank" class="transition-colors hover:text-[var(--color-brand)]">{s.nome}</a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="container-content flex flex-col gap-3 py-6 text-[13px] sm:flex-row sm:items-center sm:justify-between">
+      <p>© {anno} {legale.ragioneSociale} — P. IVA {legale.piva}{compilato(legale.pec) && ` — PEC ${legale.pec}`}</p>
+      <a href="/privacy-policy/" class="transition-colors hover:text-[var(--color-brand)]">
+        Privacy Policy &amp; Cookie Policy
+      </a>
+    </div>
+  </div>
+</footer>

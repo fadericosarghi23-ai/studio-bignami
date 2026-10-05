@@ -1,0 +1,26 @@
+---
+import { specializzazioni } from '../../data/landing';
+
+// La traccia e' duplicata: l'animazione trasla del 50% e il ciclo risulta continuo.
+const traccia = [...specializzazioni, ...specializzazioni];
+---
+
+<section
+  data-landing-only
+  class="marquee overflow-hidden border-y border-[var(--color-line)] py-6"
+  aria-label="Specializzazioni dello studio"
+>
+  <ul class="marquee-track items-center">
+    {traccia.map((voce, i) => (
+      <li
+        class="flex shrink-0 items-center gap-8 px-8"
+        aria-hidden={i >= specializzazioni.length ? 'true' : undefined}
+      >
+        <span class="font-[family-name:var(--font-display)] text-[clamp(22px,2.4vw,34px)] whitespace-nowrap text-[var(--color-ink)]">
+          {voce}
+        </span>
+        <span class="block h-1.5 w-1.5 shrink-0 rotate-45 bg-[var(--color-brand)]"></span>
+      </li>
+    ))}
+  </ul>
+</section>

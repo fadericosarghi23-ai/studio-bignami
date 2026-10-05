@@ -1,0 +1,167 @@
+---
+/**
+ * Privacy e Cookie Policy — Studio Tecnico Bignami.
+ *
+ * BOZZA DA VALIDARE col cliente (o col suo consulente privacy). L'informativa
+ * del sito attuale cita il D.Lgs. 196/2003 nella versione pre-GDPR (artt. 7 e
+ * 13) e prevede la cessione dei dati a terzi per email marketing: qui non e'
+ * stata copiata. Questo testo descrive quello che il NUOVO sito fa davvero
+ * (modulo di contatto, mappa Google incorporata, hosting, nessun cookie di
+ * profilazione) secondo l'art. 13 del Regolamento UE 2016/679.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site, legale } from '../data/landing';
+
+const aggiornamento = 'ottobre 2026';
+---
+
+<BaseLayout
+  title="Privacy e Cookie Policy | Studio Tecnico Bignami"
+  description="Informativa sul trattamento dei dati personali e sull'uso dei cookie del sito dello Studio Tecnico Bignami, San Giuliano Milanese."
+  path="/privacy-policy/"
+>
+  <section data-dark class="bg-[var(--color-ink)] pt-36 pb-14 text-white md:pt-44 md:pb-20">
+    <div class="container-content">
+      <p class="eyebrow">Informativa</p>
+      <h1 class="mt-4 text-[clamp(34px,5vw,64px)] leading-[1.08] text-white">Privacy e Cookie Policy</h1>
+      <p class="mono-meta mt-5 text-white/65">Ultimo aggiornamento: {aggiornamento}</p>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-20">
+    <div class="container-content testo-legale">
+      <p>
+        Questa informativa spiega come {site.nome} tratta i dati personali di chi visita il sito
+        e di chi lo contatta, ai sensi dell'art. 13 del Regolamento UE 2016/679 (GDPR) e del
+        D.Lgs. 196/2003 come modificato dal D.Lgs. 101/2018.
+      </p>
+
+      <h2>Titolare del trattamento</h2>
+      <p>
+        {legale.ragioneSociale}, P. IVA {legale.piva}<br />
+        {site.indirizzo}<br />
+        Telefono <a href={`tel:${site.telefonoE164}`}>{site.telefono}</a> · Email{' '}
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </p>
+
+      <h2>Quali dati trattiamo</h2>
+      <ul>
+        <li>
+          <strong>Dati che ci invii tu</strong>: nome e cognome, email, telefono e il contenuto del
+          messaggio, quando compili il modulo di contatto o ci scrivi e chiami.
+        </li>
+        <li>
+          <strong>Dati di navigazione</strong>: i dati tecnici che il server registra a ogni visita
+          (indirizzo IP, data e ora, pagina richiesta, tipo di browser), usati solo per far
+          funzionare il sito e proteggerlo.
+        </li>
+      </ul>
+
+      <h2>Perché li trattiamo e su quale base</h2>
+      <ul>
+        <li>
+          Rispondere alle tue richieste e preparare un preventivo: misure precontrattuali richieste
+          da te (art. 6, par. 1, lett. b GDPR).
+        </li>
+        <li>
+          Svolgere l'incarico, se ne nasce uno, e adempiere agli obblighi di legge, anche fiscali
+          (art. 6, par. 1, lett. b e c).
+        </li>
+        <li>
+          Garantire la sicurezza e il funzionamento del sito: legittimo interesse del titolare
+          (art. 6, par. 1, lett. f).
+        </li>
+      </ul>
+      <p>I dati inviati dal modulo non sono usati per invii commerciali e non sono ceduti a terzi per finalità di marketing.</p>
+
+      <h2>Conferimento dei dati</h2>
+      <p>
+        Fornire i dati è facoltativo, ma senza i campi obbligatori del modulo non possiamo
+        rispondere alla richiesta.
+      </p>
+
+      <h2>A chi possono essere comunicati</h2>
+      <p>
+        Ai fornitori tecnici che ci aiutano a gestire il sito e i messaggi (hosting, servizio di
+        invio del modulo, posta elettronica), che agiscono come responsabili del trattamento; e,
+        quando serve per la pratica che ci affidi, agli enti competenti (ad esempio Comune,
+        Agenzia delle Entrate – Territorio, ENEA). I dati non sono diffusi.
+      </p>
+
+      <h2>Trasferimenti fuori dall'Unione europea</h2>
+      <p>
+        Alcuni fornitori (hosting del sito, Google per la mappa) hanno sede o server negli Stati
+        Uniti. In questi casi il trasferimento avviene sulla base dell'EU-US Data Privacy
+        Framework o delle clausole contrattuali standard approvate dalla Commissione europea.
+      </p>
+
+      <h2>Per quanto tempo li conserviamo</h2>
+      <ul>
+        <li>Richieste di contatto senza seguito: fino a 12 mesi.</li>
+        <li>Se nasce un incarico: per la durata del rapporto e poi per 10 anni, come previsto dagli obblighi civilistici e fiscali.</li>
+        <li>Dati di navigazione: per il tempo stabilito dal fornitore di hosting per i log tecnici.</li>
+      </ul>
+
+      <h2>I tuoi diritti</h2>
+      <p>
+        Puoi chiedere in ogni momento l'accesso ai tuoi dati, la rettifica, la cancellazione, la
+        limitazione del trattamento, la portabilità, e opporti al trattamento (artt. 15-22 GDPR),
+        scrivendo a <a href={`mailto:${site.email}`}>{site.email}</a>. Hai anche il diritto di
+        proporre reclamo al Garante per la protezione dei dati personali
+        (<a href="https://www.garanteprivacy.it" rel="noopener noreferrer" target="_blank">garanteprivacy.it</a>).
+      </p>
+
+      <h2 id="cookie">Cookie</h2>
+      <p>
+        Il sito non usa cookie di profilazione né strumenti di statistica. Usa solo una memoria
+        tecnica di sessione del browser (sessionStorage) per mostrare l'animazione d'apertura una
+        volta per visita: non è un cookie, non ti identifica e si cancella alla chiusura della
+        scheda.
+      </p>
+      <p>
+        La sezione Contatti incorpora una mappa di Google Maps. Al caricamento della mappa Google
+        può impostare cookie propri, secondo la sua
+        <a href="https://policies.google.com/privacy" rel="noopener noreferrer" target="_blank">informativa privacy</a>.
+        Puoi bloccare o cancellare i cookie di terze parti dalle impostazioni del browser.
+      </p>
+
+      <h2>Modifiche a questa informativa</h2>
+      <p>
+        Possiamo aggiornare questa informativa quando cambia il sito o la normativa: la data in
+        cima alla pagina indica l'ultima revisione.
+      </p>
+
+      <p class="mt-12">
+        <a href="/" class="btn btn-outline">← Torna al sito</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .testo-legale {
+    max-width: 780px;
+  }
+  .testo-legale :global(h2) {
+    margin-top: 2.75rem;
+    font-size: clamp(24px, 2.6vw, 32px);
+    line-height: 1.2;
+    color: var(--color-ink);
+  }
+  .testo-legale :global(p),
+  .testo-legale :global(ul) {
+    margin-top: 1rem;
+  }
+  .testo-legale :global(ul) {
+    list-style: disc;
+    padding-left: 1.25rem;
+  }
+  .testo-legale :global(li + li) {
+    margin-top: 0.5rem;
+  }
+  .testo-legale :global(a:not(.btn)) {
+    color: var(--color-brand-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

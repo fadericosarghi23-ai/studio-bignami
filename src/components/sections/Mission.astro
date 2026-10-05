@@ -1,0 +1,68 @@
+---
+import { Image } from 'astro:assets';
+import { mission } from '../../data/landing';
+import ritratto from '../../assets/img/ritratto-fondatore.jpg';
+---
+
+<section id="mission" data-section class="bg-[var(--color-surface)] py-16 md:py-20">
+  <div class="container-content">
+    <h2 class="eyebrow" data-reveal>{mission.label}</h2>
+
+    <blockquote class="mt-6 max-w-[900px]" data-reveal data-reveal-delay="0.06">
+      <p
+        class="font-[family-name:var(--font-quote)] text-[clamp(25px,3.4vw,46px)] leading-[1.25] text-[var(--color-quote)]"
+      >
+        “{mission.quote}”
+      </p>
+    </blockquote>
+
+    {/* Anteprima nella landing: la citazione e la firma bastano a presentarsi */}
+    <div data-landing-only class="mt-8">
+      <div data-reveal data-reveal-delay="0.12">
+        <cite class="not-italic">
+          <span class="block font-[family-name:var(--font-display)] text-xl text-[var(--color-ink)]">
+            {mission.autore}
+          </span>
+          <span class="mono-meta">{mission.ruolo}</span>
+        </cite>
+      </div>
+      <a
+        href="#mission"
+        data-nav-anchor
+        data-nav-link="#mission"
+        class="btn btn-outline mt-8"
+        data-reveal
+        data-reveal-delay="0.16"
+      >
+        Conosci lo studio
+      </a>
+    </div>
+
+    {/* Scheda: il ritratto dell'architetto e il racconto per esteso */}
+    <div data-tab-only class="mt-10 border-t border-[var(--color-line)] pt-10">
+      <div class="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+        <figure data-reveal-clip>
+          <Image
+            src={ritratto}
+            alt="DA COMPILARE: foto dello studio o del team (assente sul sito attuale)"
+            widths={[400, 620, 900]}
+            sizes="(min-width: 1025px) 380px, 92vw"
+            class="h-[380px] w-full object-cover md:h-[440px]"
+            loading="lazy"
+          />
+          <figcaption class="mt-4">
+            <span class="block font-[family-name:var(--font-display)] text-xl text-[var(--color-ink)]">
+              {mission.autore}
+            </span>
+            <span class="mono-meta">{mission.ruolo}</span>
+          </figcaption>
+        </figure>
+
+        <div class="flex flex-col gap-6" data-reveal data-reveal-delay="0.08">
+          {mission.corpo.map((p) => <p class="max-w-[52ch] text-[17px]">{p}</p>)}
+          <a href="#contatti" data-nav-anchor data-nav-link="#contatti" class="btn btn-outline mt-2 self-start">{mission.ctaLabel}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

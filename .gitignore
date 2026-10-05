@@ -1,0 +1,28 @@
+# build
+dist/
+.astro/
+node_modules/
+
+# cache di Vite
+node_modules/.vite/
+
+# Il lockfile resta fuori dal repo: npm non installa in modo affidabile i
+# binari per-piattaforma di rolldown (quelli linux sul runner Netlify) quando
+# il lock e' stato generato su Windows. Vedi npm/cli#4828.
+package-lock.json
+
+# sistema
+.DS_Store
+Thumbs.db
+
+# Materiali interni di lavoro: il repo e' PUBBLICO.
+# - CONTENT_FILL.md: analisi del sito del cliente (dati, nomi di recensori)
+# - media-cliente/: originali scaricati dal sito del cliente (quelli usati
+#   sono gia' in src/assets/img e public/)
+# - docs/ e REPORT-RIEMPIMENTO.md: documento e note di consegna
+# - .claude/: configurazione locale
+CONTENT_FILL.md
+media-cliente/
+docs/
+REPORT-RIEMPIMENTO.md
+.claude/
